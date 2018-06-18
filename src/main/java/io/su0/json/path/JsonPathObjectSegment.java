@@ -1,6 +1,6 @@
 package io.su0.json.path;
 
-public class JsonPathObjectSegment {
+public class JsonPathObjectSegment implements JsonPathSegment {
 
     private final String name;
 

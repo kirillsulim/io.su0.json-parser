@@ -1,7 +1,6 @@
 package io.su0.json.path.parsing.util;
 
 import io.su0.json.path.parsing.Token;
-import io.su0.json.path.parsing.TokenType;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
