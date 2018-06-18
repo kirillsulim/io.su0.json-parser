@@ -5,8 +5,8 @@ public enum TokenType {
     DOT("\\.", false),
     ARRAY_START("\\[", false),
     ARRAY_END("\\]", false),
-    ARRAY_INDEX("d+", true),
-    OBJECT_SEGMENT("\\w", true),
+    ARRAY_INDEX("\\d+", true),
+    OBJECT_SEGMENT("\\w+", true),
     ;
 
     public final String pattern;

@@ -22,7 +22,7 @@ public class TokenMatcher extends TypeSafeMatcher<Token> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("Tokens mismatch");
+        description.appendText("token ").appendValue(token);
     }
 
     public static TokenMatcher token(Token token) {
@@ -30,6 +30,18 @@ public class TokenMatcher extends TypeSafeMatcher<Token> {
     }
 
     public static TokenMatcher root() {
-        return new TokenMatcher(new Token(TokenType.ROOT, null));
+        return new TokenMatcher(Token.ROOT);
+    }
+
+    public static TokenMatcher dot() {
+        return new TokenMatcher(Token.DOT);
+    }
+
+    public static TokenMatcher arrayStart() {
+        return new TokenMatcher(Token.ARRAY_START);
+    }
+
+    public static TokenMatcher arrayEnd() {
+        return new TokenMatcher(Token.ARRAY_END);
     }
 }
