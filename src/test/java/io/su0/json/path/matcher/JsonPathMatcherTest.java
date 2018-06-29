@@ -32,6 +32,7 @@ public class JsonPathMatcherTest {
         JsonPath path = new JsonPath();
         path.enterArray();
         path.nextArrayElement();
+        path.nextArrayElement();
 
         assertTrue(matcher.match(path));
     }
@@ -54,13 +55,17 @@ public class JsonPathMatcherTest {
         path.enterField("def");
         path.enterArray();
         path.nextArrayElement();
+        path.nextArrayElement();
         path.enterObject();
         path.enterField("jkl");
         path.enterArray();
+        path.nextArrayElement();
         path.enterArray();
+        path.nextArrayElement();
         path.nextArrayElement();
         path.nextArrayElement();
 
         assertTrue(matcher.match(path));
     }
 }
+

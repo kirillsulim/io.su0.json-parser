@@ -1,6 +1,8 @@
 package io.su0.json.parser;
 
 import io.su0.json.parser.handlers.BooleanJsonValueHandler;
+import io.su0.json.parser.handlers.IntJsonValueHandler;
+import io.su0.json.parser.handlers.StringJsonValueHandler;
 import io.su0.json.parser.walker.HandlerStorage;
 import io.su0.json.parser.walker.JsonTreeWalker;
 import io.su0.json.path.matcher.JsonPathMatcher;
@@ -21,6 +23,14 @@ public abstract class AbstractJsonHandler<Meta> {
     }
 
     protected void addBooleanJsonValueHandler(JsonPathMatcher matcher, BooleanJsonValueHandler<Meta> handler) {
+        handlerStorage.addHandler(matcher, handler);
+    }
+
+    protected void addStringJsonValueHandler(JsonPathMatcher matcher, StringJsonValueHandler<Meta> handler) {
+        handlerStorage.addHandler(matcher, handler);
+    }
+
+    protected void addIntJsonValueHandler(JsonPathMatcher matcher, IntJsonValueHandler<Meta> handler) {
         handlerStorage.addHandler(matcher, handler);
     }
 }

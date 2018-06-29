@@ -1,5 +1,6 @@
 package io.su0.json.parser;
 
+import io.su0.json.path.parsing.Facade;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -31,16 +32,18 @@ public class AbstractJsonParserOfTypeTest {
         }
     }
 
-    private static class SimplePojoParserOfType extends AbstractJsonParserOfType<SimplePojo> {
+    private static class SimplePojoParser extends AbstractJsonParserOfType<SimplePojo> {
 
-        public SimplePojoParserOfType() {
+        public SimplePojoParser() {
             super(SimplePojo::new);
+            addStringJsonValueHandler(Facade.parse("$.stringData"), SimplePojo::setStringData);
+            addIntJsonValueHandler(Facade.parse("$.intData"), SimplePojo::setIntData);
         }
     }
 
     @Test
     public void shouldParseSimplePojo() throws Exception {
-        SimplePojoParserOfType parser = new SimplePojoParserOfType();
+        SimplePojoParser parser = new SimplePojoParser();
         SimplePojo parsed = parser.parse(toStream("{\"stringData\":\"abc\",\"intData\":123}"));
 
         assertEquals("abc", parsed.getStringData());
