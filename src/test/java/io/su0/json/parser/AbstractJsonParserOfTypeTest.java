@@ -4,11 +4,10 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
 
-public class AbstractJsonParserTest {
+public class AbstractJsonParserOfTypeTest {
 
     private static class SimplePojo {
 
@@ -32,16 +31,16 @@ public class AbstractJsonParserTest {
         }
     }
 
-    private static class SimplePojoParser extends AbstractJsonParser<SimplePojo> {
+    private static class SimplePojoParserOfType extends AbstractJsonParserOfType<SimplePojo> {
 
-        public SimplePojoParser() {
+        public SimplePojoParserOfType() {
             super(SimplePojo::new);
         }
     }
 
     @Test
     public void shouldParseSimplePojo() throws Exception {
-        SimplePojoParser parser = new SimplePojoParser();
+        SimplePojoParserOfType parser = new SimplePojoParserOfType();
         SimplePojo parsed = parser.parse(toStream("{\"stringData\":\"abc\",\"intData\":123}"));
 
         assertEquals("abc", parsed.getStringData());

@@ -18,7 +18,7 @@ public class JsonTreeWalker {
     private static final JsonFactory factory = new JsonFactory();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void walk(InputStream inputStream, HandlerStorage handlerStorage) throws IOException {
+    public static void walk(InputStream inputStream, HandlerStorage handlerStorage) throws IOException {
         JsonPath jsonPath = new JsonPath();
         BracketCounter bracketCounter = new BracketCounter();
 
@@ -76,7 +76,7 @@ public class JsonTreeWalker {
         }
     }
 
-    private void processHandlers(Collection<JsonValueHandler> handlers, JsonPath path, JsonParser parser) throws IOException {
+    private static void processHandlers(Collection<JsonValueHandler> handlers, JsonPath path, JsonParser parser) throws IOException {
         for (JsonValueHandler handler : handlers) {
             if (handler instanceof StringJsonValueHandler) {
                 ((StringJsonValueHandler) handler).handle(path, parser.getValueAsString());
@@ -102,7 +102,7 @@ public class JsonTreeWalker {
         }
     }
 
-    private void processJsonNodeHandlers(Collection<JsonNodeValueHandler> handlers, JsonPath path, JsonParser parser) throws IOException {
+    private static void processJsonNodeHandlers(Collection<JsonNodeValueHandler> handlers, JsonPath path, JsonParser parser) throws IOException {
         if (handlers.isEmpty()) {
             return;
         }
