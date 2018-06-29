@@ -2,7 +2,7 @@ package io.su0.json.parser.handlers;
 
 import io.su0.json.path.JsonPath;
 
-public interface FloatJsonValueHandler extends JsonValueHandler {
+public interface FloatJsonValueHandler<Meta> extends JsonValueHandler<Meta> {
 
-    void handle(JsonPath path, float value);
+    void handle(JsonPath path, float value, Meta meta);
 }

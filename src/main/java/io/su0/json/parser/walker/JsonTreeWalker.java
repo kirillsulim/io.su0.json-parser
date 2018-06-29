@@ -18,7 +18,7 @@ public class JsonTreeWalker {
     private static final JsonFactory factory = new JsonFactory();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void walk(InputStream inputStream, HandlerStorage handlerStorage) throws IOException {
+    public static <Meta> void walk(HandlerStorage<Meta> handlerStorage, InputStream inputStream, Meta meta) throws IOException {
         JsonPath jsonPath = new JsonPath();
         BracketCounter bracketCounter = new BracketCounter();
 
@@ -66,8 +66,8 @@ public class JsonTreeWalker {
                     if (bracketCounter.inArray()) {
                         jsonPath.nextArrayElement();
                     }
-                    processHandlers(handlerStorage.getHandlers(jsonPath, jsonToken), jsonPath, parser);
-                    processJsonNodeHandlers(handlerStorage.getJsonNodeHandlers(jsonPath, jsonToken), jsonPath, parser);
+                    processHandlers(handlerStorage.getHandlers(jsonPath, jsonToken), jsonPath, parser, meta);
+                    processJsonNodeHandlers(handlerStorage.getJsonNodeHandlers(jsonPath, jsonToken), jsonPath, parser, meta);
                     break;
                 case VALUE_EMBEDDED_OBJECT:
                 case NOT_AVAILABLE:
@@ -76,25 +76,25 @@ public class JsonTreeWalker {
         }
     }
 
-    private static void processHandlers(Collection<JsonValueHandler> handlers, JsonPath path, JsonParser parser) throws IOException {
-        for (JsonValueHandler handler : handlers) {
+    private static <Meta> void processHandlers(Collection<JsonValueHandler<Meta>> handlers, JsonPath path, JsonParser parser, Meta meta) throws IOException {
+        for (JsonValueHandler<Meta> handler : handlers) {
             if (handler instanceof StringJsonValueHandler) {
-                ((StringJsonValueHandler) handler).handle(path, parser.getValueAsString());
+                ((StringJsonValueHandler<Meta>) handler).handle(path, parser.getValueAsString(), meta);
             }
             else if (handler instanceof IntJsonValueHandler) {
-                ((IntJsonValueHandler) handler).handle(path, parser.getIntValue());
+                ((IntJsonValueHandler<Meta>) handler).handle(path, parser.getIntValue(), meta);
             }
             else if (handler instanceof LongJsonValueHandler) {
-                ((LongJsonValueHandler) handler).handle(path, parser.getLongValue());
+                ((LongJsonValueHandler<Meta>) handler).handle(path, parser.getLongValue(), meta);
             }
             else if (handler instanceof FloatJsonValueHandler) {
-                ((FloatJsonValueHandler) handler).handle(path, parser.getFloatValue());
+                ((FloatJsonValueHandler<Meta>) handler).handle(path, parser.getFloatValue(), meta);
             }
             else if (handler instanceof DoubleJsonValueHandler) {
-                ((DoubleJsonValueHandler) handler).handle(path, parser.getDoubleValue());
+                ((DoubleJsonValueHandler<Meta>) handler).handle(path, parser.getDoubleValue(), meta);
             }
             else if (handler instanceof BooleanJsonValueHandler) {
-                ((BooleanJsonValueHandler) handler).handle(path, parser.getBooleanValue());
+                ((BooleanJsonValueHandler<Meta>) handler).handle(path, parser.getBooleanValue(), meta);
             }
             else {
                 throw new IllegalStateException("Unknown handler type + " + handler.getClass().getName());
@@ -102,13 +102,13 @@ public class JsonTreeWalker {
         }
     }
 
-    private static void processJsonNodeHandlers(Collection<JsonNodeValueHandler> handlers, JsonPath path, JsonParser parser) throws IOException {
+    private static <Meta> void processJsonNodeHandlers(Collection<JsonNodeValueHandler<Meta>> handlers, JsonPath path, JsonParser parser, Meta meta) throws IOException {
         if (handlers.isEmpty()) {
             return;
         }
         JsonNode treeNode = objectMapper.readTree(parser);
-        for (JsonNodeValueHandler handler : handlers) {
-            handler.handle(path, treeNode);
+        for (JsonNodeValueHandler<Meta> handler : handlers) {
+            ((JsonNodeValueHandler<Meta>) handler).handle(path, treeNode, meta);
         }
     }
 }

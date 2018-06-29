@@ -10,35 +10,35 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-public class HandlerStorage {
+public class HandlerStorage<Meta> {
 
-    private static class Bla {
+    private static class Entry<Meta> {
         JsonPathMatcher matcher;
-        JsonValueHandler handler;
+        JsonValueHandler<Meta> handler;
 
-        public Bla(JsonPathMatcher matcher, JsonValueHandler handler) {
+        Entry(JsonPathMatcher matcher, JsonValueHandler<Meta> handler) {
             this.matcher = matcher;
             this.handler = handler;
         }
     }
 
-    Collection<Bla> handlers = new LinkedList<>();
+    private Collection<Entry<Meta>> handlers = new LinkedList<>();
 
-    public void addHandler(JsonPathMatcher matcher, JsonValueHandler handler) {
-        handlers.add(new Bla(matcher, handler));
+    public void addHandler(JsonPathMatcher matcher, JsonValueHandler<Meta> handler) {
+        handlers.add(new Entry<>(matcher, handler));
     }
 
-    public Collection<JsonValueHandler> getHandlers(JsonPath path, JsonToken jsonToken) {
+    public Collection<JsonValueHandler<Meta>> getHandlers(JsonPath path, JsonToken jsonToken) {
         return handlers.stream()
-                .filter(bla -> bla.matcher.match(path) && !(bla.handler instanceof JsonNodeValueHandler))
-                .map(bla -> bla.handler)
+                .filter(entry -> entry.matcher.match(path) && !(entry.handler instanceof JsonNodeValueHandler))
+                .map(entry -> entry.handler)
                 .collect(Collectors.toList());
     }
 
-    public Collection<JsonNodeValueHandler> getJsonNodeHandlers(JsonPath path, JsonToken jsonToken) {
+    public Collection<JsonNodeValueHandler<Meta>> getJsonNodeHandlers(JsonPath path, JsonToken jsonToken) {
         return handlers.stream()
-                .filter(bla -> bla.matcher.match(path) && bla.handler instanceof JsonNodeValueHandler)
-                .map(bla -> (JsonNodeValueHandler) bla.handler)
+                .filter(entry -> entry.matcher.match(path) && entry.handler instanceof JsonNodeValueHandler)
+                .map(entry -> (JsonNodeValueHandler<Meta>) entry.handler)
                 .collect(Collectors.toList());
     }
 }
