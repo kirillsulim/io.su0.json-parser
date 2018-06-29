@@ -1,6 +1,6 @@
 package io.su0.json.path.parsing;
 
-import io.su0.json.path.JsonPath;
+import io.su0.json.path.matcher.JsonPathMatcher;
 import org.junit.Test;
 
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.index;
@@ -12,14 +12,14 @@ public class FacadeTest {
 
     @Test
     public void shouldParseRoot() {
-        JsonPath result = Facade.parse("$");
+        JsonPathMatcher result = Facade.parse("$");
 
         assertThat(result.getSegments(), hasItems());
     }
 
     @Test
     public void shouldParseSimpleSegment() {
-        JsonPath result = Facade.parse("$.abc");
+        JsonPathMatcher result = Facade.parse("$.abc");
 
         assertThat(result.getSegments(), hasItems(
                 object("abc")
@@ -28,7 +28,7 @@ public class FacadeTest {
 
     @Test
     public void shouldParseSimpleArrayIndex() {
-        JsonPath result = Facade.parse("$[123]");
+        JsonPathMatcher result = Facade.parse("$[123]");
 
         assertThat(result.getSegments(), hasItems(
                 index(123)
@@ -37,7 +37,7 @@ public class FacadeTest {
 
     @Test
     public void shouldParseComplexStructure() {
-        JsonPath result = Facade.parse("$.abc[123].def[456][789].jkl.xyz");
+        JsonPathMatcher result = Facade.parse("$.abc[123].def[456][789].jkl.xyz");
 
         assertThat(result.getSegments(), hasItems(
                 object("abc"),

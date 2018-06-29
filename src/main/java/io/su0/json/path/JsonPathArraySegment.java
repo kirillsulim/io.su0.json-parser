@@ -2,17 +2,13 @@ package io.su0.json.path;
 
 public class JsonPathArraySegment implements JsonPathSegment {
 
-    private int index = 0;
+    private int index = -1;
 
-    public JsonPathArraySegment(int index) {
-        this.index = index;
+    public void inc() {
+        ++index;
     }
 
     public int getIndex() {
         return index;
-    }
-
-    public void increment() {
-        ++index;
     }
 }

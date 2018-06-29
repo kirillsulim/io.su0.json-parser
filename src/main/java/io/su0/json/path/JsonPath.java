@@ -1,26 +1,53 @@
 package io.su0.json.path;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 public class JsonPath {
 
-    private final List<JsonPathSegment> segments = new ArrayList<>();
+    private final Deque<JsonPathSegment> segments = new LinkedList<>();
 
-    public JsonPath() {
+    public void enterObject() {
+        segments.addLast(JsonPathFieldSegment.EMPTY);
     }
 
-    public void add(JsonPathSegment segment) {
-        segments.add(segment);
+    public void leaveObject() {
+        segments.pollLast();
     }
 
-    public void pop() {
-        if (0 == segments.size()) {
-            throw new IllegalStateException("Pop from empty path");
-        }
-        segments.remove(segments.size() - 1);
+    public void enterField(String fieldName) {
+        segments.pollLast();
+        segments.addLast(new JsonPathFieldSegment(fieldName));
     }
 
-    public List<JsonPathSegment> getSegments() {
-        return Collections.unmodifiableList(segments);
+    public void enterArray() {
+        segments.addLast(new JsonPathArraySegment());
+    }
+
+    public void leaveArray() {
+        segments.pollLast();
+    }
+
+    public void nextArrayElement() {
+        ((JsonPathArraySegment) segments.peekLast()).inc();
+    }
+
+    public Deque<JsonPathSegment> getSegments() {
+        return segments;
+    }
+
+    @Override
+    public String toString() {
+        return "$" + segments.stream()
+                .map(segment -> {
+                    if (segment instanceof JsonPathFieldSegment) {
+                        return "." + ((JsonPathFieldSegment) segment).getFieldName();
+                    } else if (segment instanceof JsonPathArraySegment) {
+                        return "[" + String.valueOf(((JsonPathArraySegment) segment).getIndex()) + "]";
+                    }
+                    throw new IllegalStateException();
+                })
+                .collect(Collectors.joining());
     }
 }

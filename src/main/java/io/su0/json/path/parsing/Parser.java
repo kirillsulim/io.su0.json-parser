@@ -1,19 +1,22 @@
 package io.su0.json.path.parsing;
 
-import io.su0.json.path.JsonPath;
-import io.su0.json.path.JsonPathArraySegment;
-import io.su0.json.path.JsonPathObjectSegment;
+import io.su0.json.path.matcher.JsonPathArraySegmentMatcher;
+import io.su0.json.path.matcher.JsonPathFieldSegmentMatcher;
+import io.su0.json.path.matcher.JsonPathMatcher;
+import io.su0.json.path.matcher.JsonPathSegmentMatcher;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class Parser {
 
-    public static JsonPath parse(Iterable<Token> tokens) {
+    public static JsonPathMatcher parse(Iterable<Token> tokens) {
         Iterator<Token> iterator = tokens.iterator();
 
         checkRootToken(iterator);
 
-        JsonPath path = new JsonPath();
+        LinkedList<JsonPathSegmentMatcher> segments = new LinkedList<>();
 
         while (iterator.hasNext()) {
             Token next = iterator.next();
@@ -27,7 +30,7 @@ public class Parser {
                     if (TokenType.OBJECT_SEGMENT != segmentName.getType()) {
                         throw new IllegalArgumentException("No object segment after dot");
                     }
-                    path.add(new JsonPathObjectSegment(segmentName.getValue()));
+                    segments.add(new JsonPathFieldSegmentMatcher(segmentName.getValue()));
                     break;
                 case ARRAY_START:
                     if (!iterator.hasNext()) {
@@ -37,7 +40,8 @@ public class Parser {
                     if (TokenType.ARRAY_INDEX != arrayIndex.getType()) {
                         throw new IllegalArgumentException("Not array index after array start");
                     }
-                    path.add(new JsonPathArraySegment(Integer.valueOf(arrayIndex.getValue())));
+                    int index = Integer.valueOf(arrayIndex.getValue());
+                    segments.add(new JsonPathArraySegmentMatcher(index));
                     if (!iterator.hasNext()) {
                         throw new IllegalArgumentException("Cant finish with array index");
                     }
@@ -51,7 +55,7 @@ public class Parser {
             }
         }
 
-        return path;
+        return new JsonPathMatcher(new ArrayList<>(segments));
     }
 
     private static void checkRootToken(Iterator<Token> tokens) {

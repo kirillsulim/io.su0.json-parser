@@ -1,13 +1,9 @@
 package io.su0.json.path.parsing;
 
-import io.su0.json.path.JsonPath;
-import io.su0.json.path.parsing.util.JsonPathSegmentMatcher;
-import org.hamcrest.CoreMatchers;
+import io.su0.json.path.matcher.JsonPathMatcher;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.index;
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.object;
@@ -28,14 +24,14 @@ public class ParserTest {
 
     @Test
     public void shouldParseRootSegment() {
-        JsonPath result = Parser.parse(Arrays.asList(Token.ROOT));
+        JsonPathMatcher result = Parser.parse(Arrays.asList(Token.ROOT));
 
         assertThat(result.getSegments(), hasItems());
     }
 
     @Test
     public void shouldParseSimpleSegment() {
-        JsonPath result = Parser.parse(Arrays.asList(
+        JsonPathMatcher result = Parser.parse(Arrays.asList(
                 Token.ROOT,
                 Token.DOT,
                 new Token(TokenType.OBJECT_SEGMENT, "abc")
@@ -75,7 +71,7 @@ public class ParserTest {
 
     @Test
     public void shouldParseSimpleArrayIndex() {
-        JsonPath result = Parser.parse(Arrays.asList(
+        JsonPathMatcher result = Parser.parse(Arrays.asList(
                 Token.ROOT,
                 Token.ARRAY_START,
                 new Token(TokenType.ARRAY_INDEX, "123"),
