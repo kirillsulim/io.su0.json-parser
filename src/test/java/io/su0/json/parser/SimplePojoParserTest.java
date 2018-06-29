@@ -1,5 +1,6 @@
 package io.su0.json.parser;
 
+import io.su0.json.TestUtil;
 import io.su0.json.path.parsing.Facade;
 import org.junit.Test;
 
@@ -8,7 +9,7 @@ import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
-public class AbstractJsonParserOfTypeTest {
+public class SimplePojoParserTest {
 
     private static class SimplePojo {
 
@@ -44,14 +45,9 @@ public class AbstractJsonParserOfTypeTest {
     @Test
     public void shouldParseSimplePojo() throws Exception {
         SimplePojoParser parser = new SimplePojoParser();
-        SimplePojo parsed = parser.parse(toStream("{\"stringData\":\"abc\",\"intData\":123}"));
+        SimplePojo parsed = parser.parse(TestUtil.getResourceAsStream("simple-pojo.json"));
 
         assertEquals("abc", parsed.getStringData());
         assertEquals(123, parsed.getIntData());
-    }
-
-
-    private static InputStream toStream(String string) {
-        return new ByteArrayInputStream(string.getBytes());
     }
 }
