@@ -18,11 +18,14 @@ public class JsonTreeWalker {
     private static final JsonFactory factory = new JsonFactory();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static <Meta> void walk(HandlerStorage<Meta> handlerStorage, InputStream inputStream, Meta meta) throws IOException {
+    public static <Meta> void walk(InputStream inputStream, HandlerStorage<Meta> handlerStorage, Meta meta) throws IOException {
+        JsonParser parser = factory.createParser(inputStream);
+        walk(parser, handlerStorage, meta);
+    }
+
+    public static <Meta> void walk(JsonParser parser, HandlerStorage<Meta> handlerStorage, Meta meta) throws IOException {
         JsonPath jsonPath = new JsonPath();
         BracketCounter bracketCounter = new BracketCounter();
-
-        JsonParser parser = factory.createParser(inputStream);
 
         while (Objects.nonNull(parser.nextToken())) {
             JsonToken jsonToken = parser.currentToken();
@@ -66,49 +69,17 @@ public class JsonTreeWalker {
                     if (bracketCounter.inArray()) {
                         jsonPath.nextArrayElement();
                     }
-                    processHandlers(handlerStorage.getHandlers(jsonPath, jsonToken), jsonPath, parser, meta);
-                    processJsonNodeHandlers(handlerStorage.getJsonNodeHandlers(jsonPath, jsonToken), jsonPath, parser, meta);
                     break;
                 case VALUE_EMBEDDED_OBJECT:
                 case NOT_AVAILABLE:
                     throw new IllegalStateException();
             }
-        }
-    }
-
-    private static <Meta> void processHandlers(Collection<JsonValueHandler<Meta>> handlers, JsonPath path, JsonParser parser, Meta meta) throws IOException {
-        for (JsonValueHandler<Meta> handler : handlers) {
-            if (handler instanceof StringJsonValueHandler) {
-                ((StringJsonValueHandler<Meta>) handler).handle(path, parser.getValueAsString(), meta);
+            for (BlaHandler<Meta> handler : handlerStorage.getHandlers(jsonPath, jsonToken)) {
+                handler.handle(parser, jsonPath, jsonToken, meta);
             }
-            else if (handler instanceof IntJsonValueHandler) {
-                ((IntJsonValueHandler<Meta>) handler).handle(path, parser.getIntValue(), meta);
+            if (bracketCounter.isEmpty()) {
+                break;
             }
-            else if (handler instanceof LongJsonValueHandler) {
-                ((LongJsonValueHandler<Meta>) handler).handle(path, parser.getLongValue(), meta);
-            }
-            else if (handler instanceof FloatJsonValueHandler) {
-                ((FloatJsonValueHandler<Meta>) handler).handle(path, parser.getFloatValue(), meta);
-            }
-            else if (handler instanceof DoubleJsonValueHandler) {
-                ((DoubleJsonValueHandler<Meta>) handler).handle(path, parser.getDoubleValue(), meta);
-            }
-            else if (handler instanceof BooleanJsonValueHandler) {
-                ((BooleanJsonValueHandler<Meta>) handler).handle(path, parser.getBooleanValue(), meta);
-            }
-            else {
-                throw new IllegalStateException("Unknown handler type + " + handler.getClass().getName());
-            }
-        }
-    }
-
-    private static <Meta> void processJsonNodeHandlers(Collection<JsonNodeValueHandler<Meta>> handlers, JsonPath path, JsonParser parser, Meta meta) throws IOException {
-        if (handlers.isEmpty()) {
-            return;
-        }
-        JsonNode treeNode = objectMapper.readTree(parser);
-        for (JsonNodeValueHandler<Meta> handler : handlers) {
-            ((JsonNodeValueHandler<Meta>) handler).handle(path, treeNode, meta);
         }
     }
 }

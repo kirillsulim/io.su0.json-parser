@@ -35,4 +35,8 @@ public class BracketCounter {
     public boolean inArray() {
         return !brackets.isEmpty() && Bracket.ARRAY == brackets.peek();
     }
+
+    public boolean isEmpty() {
+        return brackets.isEmpty();
+    }
 }

@@ -37,8 +37,8 @@ public class SimplePojoParserTest {
 
         public SimplePojoParser() {
             super(SimplePojo::new);
-            addStringJsonValueHandler(Facade.parse("$.stringData"), SimplePojo::setStringData);
-            addIntJsonValueHandler(Facade.parse("$.intData"), SimplePojo::setIntData);
+            add("$.stringData", SimplePojo::setStringData);
+            add("$.intData", SimplePojo::setIntData);
         }
     }
 

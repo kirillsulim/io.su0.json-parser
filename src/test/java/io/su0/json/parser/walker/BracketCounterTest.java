@@ -1,4 +1,4 @@
-package io.su0.json.parser;
+package io.su0.json.parser.walker;
 
 import io.su0.json.parser.walker.BracketCounter;
 import org.junit.Test;
