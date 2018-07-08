@@ -6,7 +6,6 @@ public class JsonTreeWalkerTest {
 
     @Test
     public void shouldProcessEveryTokenJson() throws Exception {
-        HandlerStorage<Void> storage = new HandlerStorage<>();
 
 
     }

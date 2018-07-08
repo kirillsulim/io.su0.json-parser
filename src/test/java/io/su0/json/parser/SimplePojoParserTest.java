@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
 
@@ -37,8 +38,15 @@ public class SimplePojoParserTest {
 
         public SimplePojoParser() {
             super(SimplePojo::new);
-            add("$.stringData", SimplePojo::setStringData);
-            add("$.intData", SimplePojo::setIntData);
+            add("$.stringData", (simplePojo, jsonNode) -> simplePojo.setStringData(jsonNode.asText()));
+            add("$.intData", (simplePojo, jsonNode) -> simplePojo.setIntData(jsonNode.asInt()));
+        }
+    }
+
+    private static class SimplePojoRootValueParser extends AbstractJsonParserOfType<SimplePojo> {
+        public SimplePojoRootValueParser() {
+            super(SimplePojo::new);
+            add("$", (simplePojo, jsonNode) -> simplePojo.setStringData(jsonNode.asText()));
         }
     }
 
@@ -49,5 +57,13 @@ public class SimplePojoParserTest {
 
         assertEquals("abc", parsed.getStringData());
         assertEquals(123, parsed.getIntData());
+    }
+
+    @Test
+    public void shouldParseRootValue() throws Exception {
+        SimplePojoRootValueParser parser = new SimplePojoRootValueParser();
+        SimplePojo parsed = parser.parse(TestUtil.getResourceAsStream("string-value.json"));
+
+        assertEquals("abc", parsed.stringData);
     }
 }

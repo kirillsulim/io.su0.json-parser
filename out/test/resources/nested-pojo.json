@@ -3,5 +3,15 @@
     "stringField": "abc",
     "intField": 123
   },
-  "booleanField": true
+  "booleanField": true,
+  "list": [
+    {
+      "stringField": "abc",
+      "intField": 123
+    },
+    {
+      "stringField": "abc",
+      "intField": 123
+    }
+  ]
 }

@@ -5,6 +5,8 @@ import io.su0.json.path.parsing.Facade;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class NestedPojoParserTest {
@@ -33,6 +35,7 @@ public class NestedPojoParserTest {
     private static class Container {
         private Nested nested;
         private boolean booleanField;
+        private List<Nested> list;
 
         public Nested getNested() {
             return nested;
@@ -49,22 +52,30 @@ public class NestedPojoParserTest {
         public void setBooleanField(boolean booleanField) {
             this.booleanField = booleanField;
         }
+
+        public List<Nested> getList() {
+            return list;
+        }
+
+        public void setList(List<Nested> list) {
+            this.list = list;
+        }
     }
 
     private static class NestedParser extends AbstractJsonParserOfType<Nested> {
         public NestedParser() {
             super(Nested::new);
-            add("$.stringField", Nested::setStringField);
-            add("$.intField", Nested::setIntField);
+            add("$.stringField", (nested, jsonNode) -> nested.setStringField(jsonNode.asText()));
+            add("$.intField", (nested, jsonNode) -> nested.setIntField(jsonNode.asInt()));
         }
     }
 
     private static class ContainerParser extends AbstractJsonParserOfType<Container> {
         public ContainerParser() {
             super(Container::new);
-            add("$.booleanField", Container::setBooleanField);
+            add("$.booleanField", (container, jsonNode) -> container.setBooleanField(jsonNode.asBoolean()));
             add("$.nested", Container::setNested, new NestedParser());
-            //handle("$.list", Container::setList, new CollectionParser(ArrayList::new, new ElementParser()));
+            //add("$.list", Container::setList, new CollectionParser<>(ArrayList::new, new NestedParser()));
         }
     }
 
@@ -73,6 +84,9 @@ public class NestedPojoParserTest {
         ContainerParser containerParser = new ContainerParser();
         Container container = containerParser.parse(TestUtil.getResourceAsStream("nested-pojo.json"));
         Assert.assertTrue(container.booleanField);
+        Assert.assertEquals("abc", container.nested.stringField);
+        Assert.assertEquals(123, container.nested.intField);
+        //Assert.assertEquals(2, container.list.size());
     }
 }
 

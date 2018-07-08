@@ -3,14 +3,13 @@ package io.su0.json.parser.walker;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.su0.json.parser.handlers.*;
 import io.su0.json.path.JsonPath;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Objects;
 
 public class JsonTreeWalker {
@@ -18,23 +17,25 @@ public class JsonTreeWalker {
     private static final JsonFactory factory = new JsonFactory();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static <Meta> void walk(InputStream inputStream, HandlerStorage<Meta> handlerStorage, Meta meta) throws IOException {
+    public static void walk(InputStream inputStream, HandlerStorage handlerStorage) throws IOException {
         JsonParser parser = factory.createParser(inputStream);
-        walk(parser, handlerStorage, meta);
+        walk(parser, handlerStorage);
     }
 
-    public static <Meta> void walk(JsonParser parser, HandlerStorage<Meta> handlerStorage, Meta meta) throws IOException {
+    public static void walk(JsonParser parser, HandlerStorage handlerStorage) throws IOException {
         JsonPath jsonPath = new JsonPath();
         BracketCounter bracketCounter = new BracketCounter();
 
         while (Objects.nonNull(parser.nextToken())) {
             JsonToken jsonToken = parser.currentToken();
 
+            if (bracketCounter.inArray() && (jsonToken.isStructStart() || jsonToken.isScalarValue())) {
+                jsonPath.nextArrayElement();
+            }
+
             switch (jsonToken) {
                 case START_OBJECT:
-                    if (bracketCounter.inArray()) {
-                        jsonPath.nextArrayElement();
-                    }
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
                     jsonPath.enterObject();
                     bracketCounter.pushObject();
                     break;
@@ -43,11 +44,10 @@ public class JsonTreeWalker {
                     if (!bracketCounter.popObject()) {
                         throw new IllegalStateException();
                     }
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
                     break;
                 case START_ARRAY:
-                    if (bracketCounter.inArray()) {
-                        jsonPath.nextArrayElement();
-                    }
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
                     jsonPath.enterArray();
                     bracketCounter.pushArray();
                     break;
@@ -56,6 +56,7 @@ public class JsonTreeWalker {
                     if (!bracketCounter.popArray()) {
                         throw new IllegalStateException();
                     }
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
                     break;
                 case FIELD_NAME:
                     jsonPath.enterField(parser.getCurrentName());
@@ -66,19 +67,12 @@ public class JsonTreeWalker {
                 case VALUE_STRING:
                 case VALUE_NUMBER_INT:
                 case VALUE_NUMBER_FLOAT:
-                    if (bracketCounter.inArray()) {
-                        jsonPath.nextArrayElement();
-                    }
+                    JsonNode node = objectMapper.readTree(parser);
+                    handlerStorage.getValueHandlers(jsonPath, jsonToken).forEach(consumer -> consumer.accept(node));
                     break;
                 case VALUE_EMBEDDED_OBJECT:
                 case NOT_AVAILABLE:
                     throw new IllegalStateException();
-            }
-            for (BlaHandler<Meta> handler : handlerStorage.getHandlers(jsonPath, jsonToken)) {
-                handler.handle(parser, jsonPath, jsonToken, meta);
-            }
-            if (bracketCounter.isEmpty()) {
-                break;
             }
         }
     }
