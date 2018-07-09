@@ -38,4 +38,24 @@ public class HandlerStorageWithContext<Context> implements HandlerStorage {
             }
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public Collection<Runnable> getStartValueHandler(JsonPath path, JsonToken token) {
+        return handlerStorage.getStartValueHandlers(path, token).stream().map(consumer -> new Runnable() {
+            @Override
+            public void run() {
+                consumer.accept(context);
+            }
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Runnable> getEndValueHandler(JsonPath path, JsonToken token) {
+        return handlerStorage.getEndValueHandlers(path, token).stream().map(consumer -> new Runnable() {
+            @Override
+            public void run() {
+                consumer.accept(context);
+            }
+        }).collect(Collectors.toList());
+    }
 }

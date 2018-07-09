@@ -19,4 +19,9 @@ public class JsonPathArraySegmentMatcher implements JsonPathSegmentMatcher {
     public boolean match(JsonPathSegment segment) {
         return segment instanceof JsonPathArraySegment && ((JsonPathArraySegment) segment).getIndex() == index;
     }
+
+    @Override
+    public String toString() {
+        return "[" + index + "]";
+    }
 }

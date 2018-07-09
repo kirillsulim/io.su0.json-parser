@@ -12,4 +12,8 @@ public interface HandlerStorage {
     Collection<Runnable> getHandlers(JsonPath path, JsonToken token);
 
     Collection<Consumer<JsonNode>> getValueHandlers(JsonPath path, JsonToken token);
+
+    Collection<Runnable> getStartValueHandler(JsonPath path, JsonToken token);
+
+    Collection<Runnable> getEndValueHandler(JsonPath path, JsonToken token);
 }

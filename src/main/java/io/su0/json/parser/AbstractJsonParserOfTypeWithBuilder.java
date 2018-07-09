@@ -52,6 +52,10 @@ public abstract class AbstractJsonParserOfTypeWithBuilder<Type, TypeBuilder> imp
         handlerStorage.append(matcher, inner.handlerStorage, ref);
 
         handlerStorage.addStartObjectHandler(matcher, typeBuilder -> ref.setRef(inner.builderCreator.get()));
+        handlerStorage.addStartArrayHandler(matcher, typeBuilder -> ref.setRef(inner.builderCreator.get()));
+        handlerStorage.addStartValueHandler(matcher, typeBuilder -> ref.setRef(inner.builderCreator.get()));
         handlerStorage.addEndObjectHandler(matcher, typeBuilder -> consumer.accept(typeBuilder, inner.buildFunction.apply(ref.getRef())));
+        handlerStorage.addEndArrayHandler(matcher, typeBuilder -> consumer.accept(typeBuilder, inner.buildFunction.apply(ref.getRef())));
+        handlerStorage.addEndValueHandler(matcher, typeBuilder -> consumer.accept(typeBuilder, inner.buildFunction.apply(ref.getRef())));
     }
 }

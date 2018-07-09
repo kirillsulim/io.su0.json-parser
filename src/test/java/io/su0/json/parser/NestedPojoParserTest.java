@@ -75,7 +75,7 @@ public class NestedPojoParserTest {
             super(Container::new);
             add("$.booleanField", (container, jsonNode) -> container.setBooleanField(jsonNode.asBoolean()));
             add("$.nested", Container::setNested, new NestedParser());
-            //add("$.list", Container::setList, new CollectionParser<>(ArrayList::new, new NestedParser()));
+            add("$.list", Container::setList, new CollectionParser<>(ArrayList::new, new NestedParser()));
         }
     }
 
@@ -86,7 +86,7 @@ public class NestedPojoParserTest {
         Assert.assertTrue(container.booleanField);
         Assert.assertEquals("abc", container.nested.stringField);
         Assert.assertEquals(123, container.nested.intField);
-        //Assert.assertEquals(2, container.list.size());
+        Assert.assertEquals(2, container.list.size());
     }
 }
 

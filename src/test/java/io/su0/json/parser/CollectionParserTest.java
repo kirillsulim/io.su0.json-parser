@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import static org.junit.Assert.*;
 
 public class CollectionParserTest {
-/*
+
     private static class IntWrapper {
         int value;
 
@@ -28,13 +28,20 @@ public class CollectionParserTest {
 
         public IntWrapperParser() {
             super(IntWrapper::new);
-            add("$.value", IntWrapper::setValue, JsonParser::getIntValue);
+            add("$.value", (intWrapper, jsonNode) -> intWrapper.setValue(jsonNode.intValue()));
+        }
+    }
+
+    private static class IntegerParser extends AbstractJsonParserOfTypeWithBuilder<Integer, IntWrapper> {
+        public IntegerParser() {
+            super(IntWrapper::new, IntWrapper::getValue);
+            add("$", (intWrapper, jsonNode) -> intWrapper.setValue(jsonNode.intValue()));
         }
     }
 
     @Test
     public void shouldParseIntCollection() throws Exception {
-        CollectionParser<Integer, ArrayList<Integer>> parser = new CollectionParser<>(ArrayList::new, JsonParser::getIntValue);
+        CollectionParser<Integer, ArrayList<Integer>> parser = new CollectionParser<>(ArrayList::new, new IntegerParser());
 
         ArrayList<Integer> parsed = parser.parse(TestUtil.getResourceAsStream("simple-collection.json"));
 
@@ -58,7 +65,7 @@ public class CollectionParserTest {
 
     @Test
     public void shouldParseNestedCollection() throws Exception {
-        CollectionParser<ArrayList<Integer>, ArrayList<ArrayList<Integer>>> parser = new CollectionParser<>(ArrayList::new, new CollectionParser<>(ArrayList::new, JsonParser::getIntValue));
+        CollectionParser<ArrayList<Integer>, ArrayList<ArrayList<Integer>>> parser = new CollectionParser<>(ArrayList::new, new CollectionParser<>(ArrayList::new, new IntegerParser()));
 
         ArrayList<ArrayList<Integer>> parsed = parser.parse(TestUtil.getResourceAsStream("nested-collection.json"));
 
@@ -69,6 +76,6 @@ public class CollectionParserTest {
         assertEquals(2, parsed.get(0).size());
         assertEquals(3, (int) parsed.get(1).get(0));
         assertEquals(4, (int) parsed.get(1).get(1));
-    }*/
+    }
 }
 

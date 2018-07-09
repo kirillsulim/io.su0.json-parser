@@ -68,7 +68,9 @@ public class JsonTreeWalker {
                 case VALUE_NUMBER_INT:
                 case VALUE_NUMBER_FLOAT:
                     JsonNode node = objectMapper.readTree(parser);
+                    handlerStorage.getStartValueHandler(jsonPath, jsonToken).forEach(Runnable::run);
                     handlerStorage.getValueHandlers(jsonPath, jsonToken).forEach(consumer -> consumer.accept(node));
+                    handlerStorage.getEndValueHandler(jsonPath, jsonToken).forEach(Runnable::run);
                     break;
                 case VALUE_EMBEDDED_OBJECT:
                 case NOT_AVAILABLE:

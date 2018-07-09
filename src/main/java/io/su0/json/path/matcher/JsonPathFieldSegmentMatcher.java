@@ -21,4 +21,9 @@ public class JsonPathFieldSegmentMatcher implements JsonPathSegmentMatcher {
     public boolean match(JsonPathSegment segment) {
         return segment instanceof JsonPathFieldSegment && Objects.equals(((JsonPathFieldSegment) segment).getFieldName(), name);
     }
+
+    @Override
+    public String toString() {
+        return "." + name;
+    }
 }

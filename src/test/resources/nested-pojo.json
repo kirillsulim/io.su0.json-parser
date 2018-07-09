@@ -6,11 +6,11 @@
   "booleanField": true,
   "list": [
     {
-      "stringField": "abc",
+      "stringField": "def",
       "intField": 123
     },
     {
-      "stringField": "abc",
+      "stringField": "jkl",
       "intField": 123
     }
   ]

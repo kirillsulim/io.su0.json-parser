@@ -1,9 +1,0 @@
-{
-  "stringValue": "abc",
-  "intValue": 123,
-  "longValue": 123,
-  "floatValue": 0.123456,
-  "doubleValue": 0.123456789,
-  "trueValue": true,
-  "falseValue": false
-}

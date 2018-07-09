@@ -6,6 +6,7 @@ import io.su0.json.path.JsonPathSegment;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JsonPathMatcher {
 
@@ -37,5 +38,10 @@ public class JsonPathMatcher {
         newSeg.addAll(this.segments);
         newSeg.addAll(matcher.segments);
         return new JsonPathMatcher(newSeg);
+    }
+
+    @Override
+    public String toString() {
+        return "$" + segments.stream().map(Object::toString).collect(Collectors.joining());
     }
 }
