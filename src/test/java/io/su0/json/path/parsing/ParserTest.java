@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.arrayWildcard;
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.index;
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.object;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -79,5 +80,17 @@ public class ParserTest {
         ));
 
         assertThat(result.getSegments(), hasItems(index(123)));
+    }
+
+    @Test
+    public void shouldParseSimpleArrayWildcard() throws Exception {
+        JsonPathMatcher result = Parser.parse(Arrays.asList(
+                Token.ROOT,
+                Token.ARRAY_START,
+                Token.WILDCARD,
+                Token.ARRAY_END
+        ));
+
+        assertThat(result.getSegments(), hasItems(arrayWildcard()));
     }
 }

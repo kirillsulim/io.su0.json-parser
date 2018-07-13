@@ -6,6 +6,7 @@ public enum TokenType {
     ARRAY_START("\\[", false),
     ARRAY_END("\\]", false),
     ARRAY_INDEX("\\d+", true),
+    WILDCARD("\\*", false),
     OBJECT_SEGMENT("\\w+", true),
     ;
 

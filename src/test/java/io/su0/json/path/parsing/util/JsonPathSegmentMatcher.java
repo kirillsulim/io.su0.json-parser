@@ -1,5 +1,6 @@
 package io.su0.json.path.parsing.util;
 
+import io.su0.json.path.matcher.JsonPathArraySegmentAnyMatcher;
 import io.su0.json.path.matcher.JsonPathArraySegmentMatcher;
 import io.su0.json.path.matcher.JsonPathFieldSegmentMatcher;
 import org.hamcrest.Description;
@@ -31,6 +32,9 @@ public class JsonPathSegmentMatcher extends TypeSafeMatcher<io.su0.json.path.mat
                             ((JsonPathArraySegmentMatcher) item).getIndex()
                     );
         }
+        else if (segment instanceof JsonPathArraySegmentAnyMatcher) {
+            return item instanceof JsonPathArraySegmentAnyMatcher;
+        }
         throw new IllegalArgumentException();
     }
 
@@ -48,5 +52,9 @@ public class JsonPathSegmentMatcher extends TypeSafeMatcher<io.su0.json.path.mat
 
     public static JsonPathSegmentMatcher index(int index) {
         return new JsonPathSegmentMatcher(new JsonPathArraySegmentMatcher(index));
+    }
+
+    public static JsonPathSegmentMatcher arrayWildcard() {
+        return new JsonPathSegmentMatcher(JsonPathArraySegmentAnyMatcher.INSTANCE);
     }
 }

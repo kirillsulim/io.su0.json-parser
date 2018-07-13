@@ -1,8 +1,8 @@
 package io.su0.json.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.su0.json.parser.walker.Context;
 import io.su0.json.parser.walker.HandlerStorageImpl;
-import io.su0.json.parser.walker.HandlerStorageWithContext;
 import io.su0.json.parser.walker.JsonTreeWalker;
 import io.su0.json.path.matcher.JsonPathMatcher;
 import io.su0.json.path.parsing.Facade;
@@ -18,7 +18,7 @@ public abstract class AbstractJsonParserOfTypeWithBuilder<Type, TypeBuilder> imp
     protected final Supplier<TypeBuilder> builderCreator;
     protected final Function<TypeBuilder, Type> buildFunction;
 
-    protected final HandlerStorageImpl<TypeBuilder> handlerStorage = new HandlerStorageImpl<>();
+    protected final HandlerStorageImpl handlerStorage = new HandlerStorageImpl();
 
 
     public AbstractJsonParserOfTypeWithBuilder(
@@ -31,31 +31,37 @@ public abstract class AbstractJsonParserOfTypeWithBuilder<Type, TypeBuilder> imp
 
     @Override
     public Type parse(InputStream inputStream) throws IOException {
-        TypeBuilder accumulator = builderCreator.get();
+        Context context = new Context();
+        context.push(builderCreator.get());
 
-        HandlerStorageWithContext handlerStorageWithContext = new HandlerStorageWithContext<>(handlerStorage, accumulator);
+        JsonTreeWalker.walk(inputStream, handlerStorage, context);
 
-        JsonTreeWalker.walk(inputStream, handlerStorageWithContext);
-
-        return buildFunction.apply(accumulator);
+        return buildFunction.apply(context.pop());
     }
 
     public void add(String expr, BiConsumer<TypeBuilder, JsonNode> consumer) {
-        handlerStorage.addValueHandler(Facade.parse(expr), consumer);
+        handlerStorage.addValueHandler(Facade.parse(expr), (context, jsonNode) -> consumer.accept(context.peek(), jsonNode));
     }
 
     public <NestedType, NestedTypeBuilder> void add(String expr, BiConsumer<TypeBuilder, NestedType> consumer, AbstractJsonParserOfTypeWithBuilder<NestedType, NestedTypeBuilder> inner) {
         JsonPathMatcher matcher = Facade.parse(expr);
 
-        Ref<NestedTypeBuilder> ref = new Ref<>();
+        handlerStorage.append(matcher, inner.handlerStorage);
 
-        handlerStorage.append(matcher, inner.handlerStorage, ref);
-
-        handlerStorage.addStartObjectHandler(matcher, typeBuilder -> ref.setRef(inner.builderCreator.get()));
-        handlerStorage.addStartArrayHandler(matcher, typeBuilder -> ref.setRef(inner.builderCreator.get()));
-        handlerStorage.addStartValueHandler(matcher, typeBuilder -> ref.setRef(inner.builderCreator.get()));
-        handlerStorage.addEndObjectHandler(matcher, typeBuilder -> consumer.accept(typeBuilder, inner.buildFunction.apply(ref.getRef())));
-        handlerStorage.addEndArrayHandler(matcher, typeBuilder -> consumer.accept(typeBuilder, inner.buildFunction.apply(ref.getRef())));
-        handlerStorage.addEndValueHandler(matcher, typeBuilder -> consumer.accept(typeBuilder, inner.buildFunction.apply(ref.getRef())));
+        handlerStorage.addStartObjectHandler(matcher, context -> context.push(inner.builderCreator.get()));
+        handlerStorage.addStartArrayHandler(matcher, context -> context.push(inner.builderCreator.get()));
+        handlerStorage.addStartValueHandler(matcher, context -> context.push(inner.builderCreator.get()));
+        handlerStorage.addEndObjectHandler(matcher, context -> {
+            NestedTypeBuilder pop = context.pop();
+            consumer.accept(context.peek(), inner.buildFunction.apply(pop));
+        });
+        handlerStorage.addEndArrayHandler(matcher, context -> {
+            NestedTypeBuilder pop = context.pop();
+            consumer.accept(context.peek(), inner.buildFunction.apply(pop));
+        });
+        handlerStorage.addEndValueHandler(matcher, context -> {
+            NestedTypeBuilder pop = context.pop();
+            consumer.accept(context.peek(), inner.buildFunction.apply(pop));
+        });
     }
 }

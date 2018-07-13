@@ -6,6 +6,7 @@ public class Token {
     public static final Token DOT = new Token(TokenType.DOT, null);
     public static final Token ARRAY_START = new Token(TokenType.ARRAY_START, null);
     public static final Token ARRAY_END = new Token(TokenType.ARRAY_END, null);
+    public static final Token WILDCARD = new Token(TokenType.WILDCARD, null);
 
     private final TokenType type;
     private final String value;

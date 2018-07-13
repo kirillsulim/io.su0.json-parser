@@ -36,6 +36,10 @@ public class TokenMatcher extends TypeSafeMatcher<Token> {
         return new TokenMatcher(Token.DOT);
     }
 
+    public static TokenMatcher wildcard() {
+        return new TokenMatcher(Token.WILDCARD);
+    }
+
     public static TokenMatcher arrayStart() {
         return new TokenMatcher(Token.ARRAY_START);
     }

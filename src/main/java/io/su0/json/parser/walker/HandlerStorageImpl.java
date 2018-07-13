@@ -12,9 +12,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class HandlerStorageImpl<Context> {
+public class HandlerStorageImpl implements HandlerStorage {
 
-    private static class Entry<Context> {
+    private static class Entry {
         private final JsonPathMatcher matcher;
         private final Consumer<Context> handler;
 
@@ -24,7 +24,7 @@ public class HandlerStorageImpl<Context> {
         }
     }
 
-    private static class ValueConsumerEntry<Context> {
+    private static class ValueConsumerEntry {
         private final JsonPathMatcher matcher;
         private final BiConsumer<Context, JsonNode> handler;
 
@@ -34,69 +34,66 @@ public class HandlerStorageImpl<Context> {
         }
     }
 
-    private final Collection<ValueConsumerEntry<Context>> valueHandlers = new LinkedList<>();
+    private final Collection<ValueConsumerEntry> valueHandlers = new LinkedList<>();
 
-    private final Collection<Entry<Context>> startObjectHandlers = new LinkedList<>();
-    private final Collection<Entry<Context>> endObjectHandlers = new LinkedList<>();
-    private final Collection<Entry<Context>> startArrayHandlers = new LinkedList<>();
-    private final Collection<Entry<Context>> endArrayHandlers = new LinkedList<>();
-    private final Collection<Entry<Context>> startValueHandlers = new LinkedList<>();
-    private final Collection<Entry<Context>> endValueHandlers = new LinkedList<>();
+    private final Collection<Entry> startObjectHandlers = new LinkedList<>();
+    private final Collection<Entry> endObjectHandlers = new LinkedList<>();
+    private final Collection<Entry> startArrayHandlers = new LinkedList<>();
+    private final Collection<Entry> endArrayHandlers = new LinkedList<>();
+    private final Collection<Entry> startValueHandlers = new LinkedList<>();
+    private final Collection<Entry> endValueHandlers = new LinkedList<>();
 
 
     public void addValueHandler(JsonPathMatcher matcher, BiConsumer<Context, JsonNode> consumer) {
-        valueHandlers.add(new ValueConsumerEntry<>(matcher, consumer));
+        valueHandlers.add(new ValueConsumerEntry(matcher, consumer));
     }
 
     public void addStartObjectHandler(JsonPathMatcher matcher, Consumer<Context> runnable) {
-        startObjectHandlers.add(new Entry<>(matcher, runnable));
+        startObjectHandlers.add(new Entry(matcher, runnable));
     }
 
     public void addEndObjectHandler(JsonPathMatcher matcher, Consumer<Context> runnable) {
-        endObjectHandlers.add(new Entry<>(matcher, runnable));
+        endObjectHandlers.add(new Entry(matcher, runnable));
     }
 
     public void addStartArrayHandler(JsonPathMatcher matcher, Consumer<Context> runnable) {
-        startArrayHandlers.add(new Entry<>(matcher, runnable));
+        startArrayHandlers.add(new Entry(matcher, runnable));
     }
 
     public void addEndArrayHandler(JsonPathMatcher matcher, Consumer<Context> runnable) {
-        endArrayHandlers.add(new Entry<>(matcher, runnable));
+        endArrayHandlers.add(new Entry(matcher, runnable));
     }
 
     public void addStartValueHandler(JsonPathMatcher matcher, Consumer<Context> runnable) {
-        startValueHandlers.add(new Entry<>(matcher, runnable));
+        startValueHandlers.add(new Entry(matcher, runnable));
     }
 
     public void addEndValueHandler(JsonPathMatcher matcher, Consumer<Context> runnable) {
-        endValueHandlers.add(new Entry<>(matcher, runnable));
+        endValueHandlers.add(new Entry(matcher, runnable));
     }
 
-    public <InnerContext> void append(JsonPathMatcher matcher, HandlerStorageImpl<InnerContext> innerStorage, Ref<InnerContext> ref) {
-        for (ValueConsumerEntry<InnerContext> entry : innerStorage.valueHandlers) {
-            valueHandlers.add(new ValueConsumerEntry<>(matcher.append(entry.matcher), (context, jsonNode) -> {
-                entry.handler.accept(ref.getRef(), jsonNode);
-            }));
+    public void append(JsonPathMatcher matcher, HandlerStorageImpl innerStorage) {
+        for (ValueConsumerEntry entry : innerStorage.valueHandlers) {
+            valueHandlers.add(new ValueConsumerEntry(matcher.append(entry.matcher), entry.handler));
         }
-        for (Entry<InnerContext> entry : innerStorage.startValueHandlers) {
-            startValueHandlers.add(new Entry<>(matcher.append(entry.matcher), context -> entry.handler.accept(ref.getRef())));
+        for (Entry entry : innerStorage.startValueHandlers) {
+            startValueHandlers.add(new Entry(matcher.append(entry.matcher), entry.handler));
         }
-        for (Entry<InnerContext> entry : innerStorage.endValueHandlers) {
-            endValueHandlers.add(new Entry<>(matcher.append(entry.matcher), context -> entry.handler.accept(ref.getRef())));
+        for (Entry entry : innerStorage.endValueHandlers) {
+            endValueHandlers.add(new Entry(matcher.append(entry.matcher), entry.handler));
         }
-        for (Entry<InnerContext> entry : innerStorage.startObjectHandlers) {
-            startObjectHandlers.add(new Entry<>(matcher.append(entry.matcher), context -> entry.handler.accept(ref.getRef())));
+        for (Entry entry : innerStorage.startObjectHandlers) {
+            startObjectHandlers.add(new Entry(matcher.append(entry.matcher), entry.handler));
         }
-        for (Entry<InnerContext> entry : innerStorage.endObjectHandlers) {
-            endObjectHandlers.add(new Entry<>(matcher.append(entry.matcher), context -> entry.handler.accept(ref.getRef())));
+        for (Entry entry : innerStorage.endObjectHandlers) {
+            endObjectHandlers.add(new Entry(matcher.append(entry.matcher), entry.handler));
         }
-        for (Entry<InnerContext> entry : innerStorage.startArrayHandlers) {
-            startArrayHandlers.add(new Entry<>(matcher.append(entry.matcher), context -> entry.handler.accept(ref.getRef())));
+        for (Entry entry : innerStorage.startArrayHandlers) {
+            startArrayHandlers.add(new Entry(matcher.append(entry.matcher), entry.handler));
         }
-        for (Entry<InnerContext> entry : innerStorage.endArrayHandlers) {
-            endArrayHandlers.add(new Entry<>(matcher.append(entry.matcher), context -> entry.handler.accept(ref.getRef())));
+        for (Entry entry : innerStorage.endArrayHandlers) {
+            endArrayHandlers.add(new Entry(matcher.append(entry.matcher), entry.handler));
         }
-
     }
 
     public Collection<Consumer<Context>> getHandlers(JsonPath path, JsonToken token) {

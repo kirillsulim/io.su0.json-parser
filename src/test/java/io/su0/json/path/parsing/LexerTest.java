@@ -67,6 +67,18 @@ public class LexerTest {
         ));
     }
 
+    @Test
+    public void shouldLexWildcardArray() throws Exception {
+        Collection<Token> tokens = lexToCollection("$[*]");
+
+        assertThat(tokens, hasItems(
+                root(),
+                arrayStart(),
+                wildcard(),
+                arrayEnd()
+        ));
+    }
+
     private static Collection<Token> lexToCollection(String expression) {
         return StreamSupport.stream(new Lexer(expression).spliterator(), false).collect(Collectors.toList());
     }

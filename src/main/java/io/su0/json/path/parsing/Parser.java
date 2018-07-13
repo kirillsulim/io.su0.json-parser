@@ -1,9 +1,6 @@
 package io.su0.json.path.parsing;
 
-import io.su0.json.path.matcher.JsonPathArraySegmentMatcher;
-import io.su0.json.path.matcher.JsonPathFieldSegmentMatcher;
-import io.su0.json.path.matcher.JsonPathMatcher;
-import io.su0.json.path.matcher.JsonPathSegmentMatcher;
+import io.su0.json.path.matcher.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,11 +34,16 @@ public class Parser {
                         throw new IllegalArgumentException("Cant finish with array start");
                     }
                     Token arrayIndex = iterator.next();
-                    if (TokenType.ARRAY_INDEX != arrayIndex.getType()) {
+                    if (TokenType.ARRAY_INDEX == arrayIndex.getType()) {
+                        int index = Integer.valueOf(arrayIndex.getValue());
+                        segments.add(new JsonPathArraySegmentMatcher(index));
+                    }
+                    else if (TokenType.WILDCARD == arrayIndex.getType()) {
+                        segments.add(JsonPathArraySegmentAnyMatcher.INSTANCE);
+                    }
+                    else {
                         throw new IllegalArgumentException("Not array index after array start");
                     }
-                    int index = Integer.valueOf(arrayIndex.getValue());
-                    segments.add(new JsonPathArraySegmentMatcher(index));
                     if (!iterator.hasNext()) {
                         throw new IllegalArgumentException("Cant finish with array index");
                     }

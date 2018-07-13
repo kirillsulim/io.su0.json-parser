@@ -17,12 +17,12 @@ public class JsonTreeWalker {
     private static final JsonFactory factory = new JsonFactory();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void walk(InputStream inputStream, HandlerStorage handlerStorage) throws IOException {
+    public static void walk(InputStream inputStream, HandlerStorage handlerStorage, Context context) throws IOException {
         JsonParser parser = factory.createParser(inputStream);
-        walk(parser, handlerStorage);
+        walk(parser, handlerStorage, context);
     }
 
-    public static void walk(JsonParser parser, HandlerStorage handlerStorage) throws IOException {
+    public static void walk(JsonParser parser, HandlerStorage handlerStorage, Context context) throws IOException {
         JsonPath jsonPath = new JsonPath();
         BracketCounter bracketCounter = new BracketCounter();
 
@@ -35,7 +35,7 @@ public class JsonTreeWalker {
 
             switch (jsonToken) {
                 case START_OBJECT:
-                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(c -> c.accept(context));
                     jsonPath.enterObject();
                     bracketCounter.pushObject();
                     break;
@@ -44,10 +44,10 @@ public class JsonTreeWalker {
                     if (!bracketCounter.popObject()) {
                         throw new IllegalStateException();
                     }
-                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(c -> c.accept(context));
                     break;
                 case START_ARRAY:
-                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(c -> c.accept(context));
                     jsonPath.enterArray();
                     bracketCounter.pushArray();
                     break;
@@ -56,7 +56,7 @@ public class JsonTreeWalker {
                     if (!bracketCounter.popArray()) {
                         throw new IllegalStateException();
                     }
-                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(Runnable::run);
+                    handlerStorage.getHandlers(jsonPath, jsonToken).forEach(c -> c.accept(context));
                     break;
                 case FIELD_NAME:
                     jsonPath.enterField(parser.getCurrentName());
@@ -68,9 +68,9 @@ public class JsonTreeWalker {
                 case VALUE_NUMBER_INT:
                 case VALUE_NUMBER_FLOAT:
                     JsonNode node = objectMapper.readTree(parser);
-                    handlerStorage.getStartValueHandler(jsonPath, jsonToken).forEach(Runnable::run);
-                    handlerStorage.getValueHandlers(jsonPath, jsonToken).forEach(consumer -> consumer.accept(node));
-                    handlerStorage.getEndValueHandler(jsonPath, jsonToken).forEach(Runnable::run);
+                    handlerStorage.getStartValueHandlers(jsonPath, jsonToken).forEach(c -> c.accept(context));
+                    handlerStorage.getValueHandlers(jsonPath, jsonToken).forEach(c -> c.accept(context, node));
+                    handlerStorage.getEndValueHandlers(jsonPath, jsonToken).forEach(c -> c.accept(context));
                     break;
                 case VALUE_EMBEDDED_OBJECT:
                 case NOT_AVAILABLE:
