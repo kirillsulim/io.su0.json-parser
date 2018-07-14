@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MtTest {
+public class MultithreadParsingTest {
 
     private static final int THREAD_COUNT = 100;
     public static final int COLLECTION_LENGTH = 1_000;

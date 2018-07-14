@@ -37,11 +37,9 @@ public class Parser {
                     if (TokenType.ARRAY_INDEX == arrayIndex.getType()) {
                         int index = Integer.valueOf(arrayIndex.getValue());
                         segments.add(new JsonPathArraySegmentMatcher(index));
-                    }
-                    else if (TokenType.WILDCARD == arrayIndex.getType()) {
+                    } else if (TokenType.WILDCARD == arrayIndex.getType()) {
                         segments.add(JsonPathArraySegmentAnyMatcher.INSTANCE);
-                    }
-                    else {
+                    } else {
                         throw new IllegalArgumentException("Not array index after array start");
                     }
                     if (!iterator.hasNext()) {

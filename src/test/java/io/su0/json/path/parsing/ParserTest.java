@@ -5,11 +5,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.arrayWildcard;
-import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.index;
-import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.object;
+import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.*;
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class ParserTest {
 

@@ -24,15 +24,13 @@ public class JsonPathSegmentMatcher extends TypeSafeMatcher<io.su0.json.path.mat
                             ((JsonPathFieldSegmentMatcher) segment).getName(),
                             ((JsonPathFieldSegmentMatcher) item).getName()
                     );
-        }
-        else if (segment instanceof JsonPathArraySegmentMatcher) {
+        } else if (segment instanceof JsonPathArraySegmentMatcher) {
             return item instanceof JsonPathArraySegmentMatcher &&
                     Objects.equals(
                             ((JsonPathArraySegmentMatcher) segment).getIndex(),
                             ((JsonPathArraySegmentMatcher) item).getIndex()
                     );
-        }
-        else if (segment instanceof JsonPathArraySegmentAnyMatcher) {
+        } else if (segment instanceof JsonPathArraySegmentAnyMatcher) {
             return item instanceof JsonPathArraySegmentAnyMatcher;
         }
         throw new IllegalArgumentException();

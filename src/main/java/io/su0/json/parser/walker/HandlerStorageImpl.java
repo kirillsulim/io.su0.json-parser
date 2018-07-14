@@ -2,7 +2,6 @@ package io.su0.json.parser.walker;
 
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.su0.json.parser.Ref;
 import io.su0.json.path.JsonPath;
 import io.su0.json.path.matcher.JsonPathMatcher;
 

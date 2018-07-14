@@ -1,14 +1,11 @@
 package io.su0.json.parser;
 
-import com.fasterxml.jackson.core.JsonParser;
 import io.su0.json.TestUtil;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CollectionParserTest {
 

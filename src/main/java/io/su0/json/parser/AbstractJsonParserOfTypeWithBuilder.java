@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class AbstractJsonParserOfTypeWithBuilder<Type, TypeBuilder> implements Parser<Type> {
+public abstract class AbstractJsonParserOfTypeWithBuilder<Type, TypeBuilder> {
 
     protected final Supplier<TypeBuilder> builderCreator;
     protected final Function<TypeBuilder, Type> buildFunction;
@@ -29,7 +29,6 @@ public abstract class AbstractJsonParserOfTypeWithBuilder<Type, TypeBuilder> imp
         this.buildFunction = buildFunction;
     }
 
-    @Override
     public Type parse(InputStream inputStream) throws IOException {
         Context context = new Context();
         context.push(builderCreator.get());

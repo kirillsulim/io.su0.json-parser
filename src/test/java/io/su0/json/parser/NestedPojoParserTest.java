@@ -1,13 +1,11 @@
 package io.su0.json.parser;
 
 import io.su0.json.TestUtil;
-import io.su0.json.path.parsing.Facade;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class NestedPojoParserTest {
 

@@ -1,14 +1,9 @@
 package io.su0.json.parser;
 
 import io.su0.json.TestUtil;
-import io.su0.json.path.parsing.Facade;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.function.Supplier;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class SimplePojoParserTest {
 
