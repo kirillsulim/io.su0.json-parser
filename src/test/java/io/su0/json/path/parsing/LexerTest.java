@@ -1,6 +1,8 @@
 package io.su0.json.path.parsing;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -12,6 +14,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class LexerTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void shouldLexEmptyString() {
@@ -77,6 +82,38 @@ public class LexerTest {
                 wildcard(),
                 arrayEnd()
         ));
+    }
+
+    @Test
+    public void shouldThrowExceptionOnIncorrectPatternInside() throws Exception {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("Cannot parse sequence \"@@@@\" between (1, 5)");
+
+        Collection<Token> tokens = lexToCollection("$@@@@$");
+    }
+
+    @Test
+    public void shouldThrowExceptionOnIncorrectPatternAtTheBegining() throws Exception {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("Cannot parse sequence \"@@@@\" between (0, 4)");
+
+        Collection<Token> tokens = lexToCollection("@@@@$");
+    }
+
+    @Test()
+    public void shouldThrowExceptionOnIncorrectPatternAtTheEnd() throws Exception {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("Cannot parse sequence \"@@@@\" between (3, 7)");
+
+        Collection<Token> tokens = lexToCollection("asd@@@@");
+    }
+
+    @Test()
+    public void shouldThrowExceptionIfAllPatternIsIncorrect() throws Exception {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("Cannot parse sequence \"@@@@\" between (0, 4)");
+
+        Collection<Token> tokens = lexToCollection("@@@@");
     }
 
     private static Collection<Token> lexToCollection(String expression) {

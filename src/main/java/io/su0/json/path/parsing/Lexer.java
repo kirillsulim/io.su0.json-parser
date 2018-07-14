@@ -10,54 +10,43 @@ import java.util.stream.Collectors;
 
 public class Lexer implements Iterable<Token> {
 
-    private class MatcherFindGuard {
+    private static class LexerIterator implements Iterator<Token> {
 
-        private final Matcher matcher;
-        private boolean findCalled = false;
-        private boolean lastFind;
-
-        public MatcherFindGuard(Matcher matcher) {
-            this.matcher = matcher;
-        }
-
-        public boolean find() {
-            if (!findCalled) {
-                lastFind = matcher.find();
-                findCalled = true;
-            }
-            return lastFind;
-        }
-
-        public void reset() {
-            findCalled = false;
-        }
-    }
-
-    private class LexerIterator implements Iterator<Token> {
-
-        private final Matcher matcher;
-        private final MatcherFindGuard guard;
-
-        public LexerIterator(String string) {
+        private static final Pattern LOOP_PATTERN;
+        static {
             String loopPattern = Arrays.stream(TokenType.values())
                     .map(tokenType -> String.format("(?<%s>%s)", tokenType.groupName, tokenType.pattern))
                     .collect(Collectors.joining("|"));
 
-            this.matcher = Pattern.compile(loopPattern).matcher(string);
-            this.guard = new MatcherFindGuard(matcher);
+            LOOP_PATTERN = Pattern.compile(loopPattern);
+        }
+
+        private final Matcher matcher;
+        private final String pattern;
+
+        private int lastEnd = 0;
+
+        public LexerIterator(String pattern) {
+            this.matcher = LOOP_PATTERN.matcher(pattern);
+            this.pattern = pattern;
         }
 
         @Override
         public boolean hasNext() {
-            return guard.find();
+            return lastEnd != pattern.length();
         }
 
         @Override
         public Token next() {
-            if (!guard.find()) {
-                throw new NoSuchElementException();
+            if (!matcher.find()) {
+                throwIllegalSequence(pattern.length());
             }
-            guard.reset();
+
+            int start = matcher.start();
+            if (start != lastEnd) {
+                throwIllegalSequence(start);
+            }
+            lastEnd = matcher.end();
 
             for (TokenType token : TokenType.values()) {
                 String group = matcher.group(token.groupName);
@@ -65,7 +54,16 @@ public class Lexer implements Iterable<Token> {
                     return new Token(token, token.hasValue ? group : null);
                 }
             }
-            throw new IllegalStateException(String.format("No token matched at %d", matcher.end()));
+            throw new IllegalStateException(String.format("No token matched at %d", lastEnd));
+        }
+
+        private void throwIllegalSequence(int start) {
+            throw new IllegalStateException(String.format(
+                    "Cannot parse sequence \"%s\" between (%d, %d)",
+                    pattern.substring(lastEnd, start),
+                    lastEnd,
+                    start
+            ));
         }
     }
 

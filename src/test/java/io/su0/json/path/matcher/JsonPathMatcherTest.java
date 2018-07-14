@@ -38,7 +38,23 @@ public class JsonPathMatcherTest {
     }
 
     @Test
-    public void shuldMatchComplexStructure() {
+    public void shouldMatchAnyArrayIndex() throws Exception {
+        JsonPathMatcher matcher = new JsonPathMatcher(Arrays.asList(
+                JsonPathArraySegmentAnyMatcher.INSTANCE
+        ));
+
+        JsonPath path = new JsonPath();
+        path.enterArray();
+        path.nextArrayElement();
+
+        assertTrue(matcher.match(path));
+
+        path.nextArrayElement();
+        assertTrue(matcher.match(path));
+    }
+
+    @Test
+    public void shouldMatchComplexStructure() {
         JsonPathMatcher matcher = new JsonPathMatcher(Arrays.asList(
                 new JsonPathFieldSegmentMatcher("abc"),
                 new JsonPathFieldSegmentMatcher("def"),
