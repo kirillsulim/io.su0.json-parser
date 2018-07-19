@@ -11,12 +11,12 @@ import static org.junit.Assert.assertThat;
 
 public class ParserTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowOnEmptySequence() {
         Parser.parse(Arrays.asList());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowIfSequenceNotStartWithRoot() {
         Parser.parse(Arrays.asList(Token.DOT));
     }
@@ -39,7 +39,7 @@ public class ParserTest {
         assertThat(result.getSegments(), hasItems(object("abc")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowOnArrayStartAfterDot() {
         Parser.parse(Arrays.asList(
                 Token.ROOT,
@@ -48,7 +48,7 @@ public class ParserTest {
         ));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowOnDotAfterArrayStart() {
         Parser.parse(Arrays.asList(
                 Token.ROOT,
@@ -58,7 +58,7 @@ public class ParserTest {
         ));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowOnDotAfterArrayIndex() {
         Parser.parse(Arrays.asList(
                 Token.ROOT,
