@@ -1,6 +1,5 @@
 package io.su0.json.path;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class JsonPathLocationTest {

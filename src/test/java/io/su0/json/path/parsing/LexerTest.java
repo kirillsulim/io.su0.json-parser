@@ -1,6 +1,5 @@
 package io.su0.json.path.parsing;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -86,7 +85,7 @@ public class LexerTest {
         Assertions.assertThrows(
                 IllegalStateException.class,
                 () -> lexToCollection("$@@@@$"),
-        "Cannot parse sequence \"@@@@\" between (1, 5)"
+                "Cannot parse sequence \"@@@@\" between (1, 5)"
         );
     }
 

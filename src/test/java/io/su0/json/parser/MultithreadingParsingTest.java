@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class MultithreadParsingTest {
+public class MultithreadingParsingTest {
 
     private static final int THREAD_COUNT = 100;
     public static final int COLLECTION_LENGTH = 1_000;
@@ -45,7 +45,7 @@ public class MultithreadParsingTest {
     private static final TestParser PARSER = new TestParser();
 
     @Test
-    public void shouldParseInMultuthreadingEnvironment() throws Exception {
+    public void shouldParseInMultithreadingEnvironment() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         stream.write("[".getBytes());
         for (int i = 0; i < COLLECTION_LENGTH; ++i) {

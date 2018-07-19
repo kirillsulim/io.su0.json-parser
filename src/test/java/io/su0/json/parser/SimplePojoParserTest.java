@@ -1,7 +1,6 @@
 package io.su0.json.parser;
 
 import io.su0.json.TestUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

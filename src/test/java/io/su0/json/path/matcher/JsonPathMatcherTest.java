@@ -1,7 +1,6 @@
 package io.su0.json.path.matcher;
 
 import io.su0.json.path.JsonPath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
