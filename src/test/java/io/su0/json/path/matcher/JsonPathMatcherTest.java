@@ -1,14 +1,15 @@
 package io.su0.json.path.matcher;
 
 import io.su0.json.path.JsonPath;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class JsonPathMatcherTest {
-
 
     @Test
     public void shouldMatchField() {

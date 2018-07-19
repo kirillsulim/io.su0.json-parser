@@ -1,11 +1,13 @@
 package io.su0.json.parser;
 
 import io.su0.json.TestUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NestedPojoParserTest {
 
@@ -81,10 +83,10 @@ public class NestedPojoParserTest {
     public void shouldParseContainer() throws Exception {
         ContainerParser containerParser = new ContainerParser();
         Container container = containerParser.parse(TestUtil.getResourceAsStream("nested-pojo.json"));
-        Assert.assertTrue(container.booleanField);
-        Assert.assertEquals("abc", container.nested.stringField);
-        Assert.assertEquals(123, container.nested.intField);
-        Assert.assertEquals(2, container.list.size());
+        assertTrue(container.booleanField);
+        assertEquals("abc", container.nested.stringField);
+        assertEquals(123, container.nested.intField);
+        assertEquals(2, container.list.size());
     }
 }
 

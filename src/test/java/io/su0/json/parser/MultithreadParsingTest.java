@@ -1,13 +1,15 @@
 package io.su0.json.parser;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MultithreadParsingTest {
 
@@ -67,7 +69,7 @@ public class MultithreadParsingTest {
                 try {
                     ArrayList<Container> parsed = PARSER.parse(new ByteArrayInputStream(bytes));
 
-                    Assert.assertEquals(COLLECTION_LENGTH, parsed.size());
+                    assertEquals(COLLECTION_LENGTH, parsed.size());
                     for (int j = 0; j < COLLECTION_LENGTH; ++j) {
                         if (j != parsed.get(j).value) {
                             mismatch.set(true);
@@ -84,6 +86,6 @@ public class MultithreadParsingTest {
         for (Thread thread : threads) {
             thread.join();
         }
-        Assert.assertFalse("Value mismatch found", mismatch.get());
+        assertFalse(mismatch.get(), "Value mismatch found");
     }
 }

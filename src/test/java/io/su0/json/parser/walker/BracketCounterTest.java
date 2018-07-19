@@ -1,9 +1,11 @@
 package io.su0.json.parser.walker;
 
-import io.su0.json.parser.walker.BracketCounter;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class BracketCounterTest {
 

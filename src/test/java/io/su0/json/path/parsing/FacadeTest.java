@@ -1,12 +1,12 @@
 package io.su0.json.path.parsing;
 
 import io.su0.json.path.matcher.JsonPathMatcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.index;
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.object;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
 
 public class FacadeTest {
 

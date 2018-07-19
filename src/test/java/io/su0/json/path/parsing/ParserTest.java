@@ -1,24 +1,31 @@
 package io.su0.json.path.parsing;
 
 import io.su0.json.path.matcher.JsonPathMatcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static io.su0.json.path.parsing.util.JsonPathSegmentMatcher.*;
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ParserTest {
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowOnEmptySequence() {
-        Parser.parse(Arrays.asList());
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> Parser.parse(Arrays.asList())
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfSequenceNotStartWithRoot() {
-        Parser.parse(Arrays.asList(Token.DOT));
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> Parser.parse(Arrays.asList(Token.DOT))
+        );
     }
 
     @Test
@@ -39,33 +46,42 @@ public class ParserTest {
         assertThat(result.getSegments(), hasItems(object("abc")));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowOnArrayStartAfterDot() {
-        Parser.parse(Arrays.asList(
-                Token.ROOT,
-                Token.DOT,
-                Token.ARRAY_START
-        ));
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> Parser.parse(Arrays.asList(
+                        Token.ROOT,
+                        Token.DOT,
+                        Token.ARRAY_START
+                ))
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowOnDotAfterArrayStart() {
-        Parser.parse(Arrays.asList(
-                Token.ROOT,
-                Token.ARRAY_START,
-                Token.DOT,
-                new Token(TokenType.OBJECT_SEGMENT, "abc")
-        ));
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> Parser.parse(Arrays.asList(
+                        Token.ROOT,
+                        Token.ARRAY_START,
+                        Token.DOT,
+                        new Token(TokenType.OBJECT_SEGMENT, "abc")
+                ))
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowOnDotAfterArrayIndex() {
-        Parser.parse(Arrays.asList(
-                Token.ROOT,
-                Token.ARRAY_START,
-                new Token(TokenType.ARRAY_INDEX, "123"),
-                Token.DOT
-        ));
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> Parser.parse(Arrays.asList(
+                        Token.ROOT,
+                        Token.ARRAY_START,
+                        new Token(TokenType.ARRAY_INDEX, "123"),
+                        Token.DOT
+                ))
+        );
     }
 
     @Test
