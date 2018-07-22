@@ -38,3 +38,8 @@ jar {
         )
     }
 }
+
+jmh {
+    fork = 0 // TODO: DEV ONLY, REMOVE LATER
+    profilers = ['gc']
+}
