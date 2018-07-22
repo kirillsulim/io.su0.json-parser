@@ -1,8 +1,9 @@
-package io.su0.json.parser.benchmark.small;
+package io.su0.json.parser.benchmark.model;
 
 public class Pojo {
     private String stringValue;
     private int intValue;
+    private boolean boolValue;
 
     public String getStringValue() {
         return stringValue;
@@ -18,5 +19,13 @@ public class Pojo {
 
     public void setIntValue(int intValue) {
         this.intValue = intValue;
+    }
+
+    public boolean isBoolValue() {
+        return boolValue;
+    }
+
+    public void setBoolValue(boolean boolValue) {
+        this.boolValue = boolValue;
     }
 }
